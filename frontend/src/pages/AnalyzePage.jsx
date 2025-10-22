@@ -13,7 +13,7 @@ const AnalyzePage = () => {
   useEffect(() => {
     const fetchDatasets = async () => {
       try {
-        const response = await fetch('/api/files/list', {
+        const response = await fetch('/files/list', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ const AnalyzePage = () => {
     setAnalysisResult(null);
 
     try {
-      const response = await fetch(`/api/analyze?dataset_id=${selectedDatasetId}&question=${encodeURIComponent(question.trim())}`, {
+      const response = await fetch(`/analyze?dataset_id=${selectedDatasetId}&question=${encodeURIComponent(question.trim())}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

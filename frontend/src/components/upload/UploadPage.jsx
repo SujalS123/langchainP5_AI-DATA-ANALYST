@@ -49,7 +49,7 @@ const UploadPage = () => {
 
     try {
       // Send POST request to the correct endpoint
-      const response = await axiosClient.post('/api/upload', formData, {
+      const response = await axiosClient.post('/files/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
