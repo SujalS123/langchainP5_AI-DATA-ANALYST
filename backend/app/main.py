@@ -17,6 +17,7 @@ app.add_middleware(
     allow_credentials=True,  # Allow credentials
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 @app.get("/docs", include_in_schema=False)
