@@ -11,9 +11,17 @@ app = FastAPI(title="AI Data Analyst")
 app.include_router(upload.router)
 app.include_router(analyze.router)
 
+# Configure CORS for both local development and production
+allowed_origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://ai-data-analyst-eta.vercel.app",
+    "https://langchainp5-ai-data-analyst.onrender.com"
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"],
     allow_headers=["*"],
