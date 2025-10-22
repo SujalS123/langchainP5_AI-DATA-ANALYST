@@ -4,7 +4,7 @@ This project implements an AI Data Analyst backend using FastAPI, LangChain, and
 
 ## Features
 
-* **User Authentication:** Secure user signup and login using JWT.
+* 
 * **CSV Uploads:** Users can upload CSV files, which are stored in MongoDB Atlas GridFS.
 * **Natural Language Queries:** Users can ask questions about their uploaded datasets using natural language.
 * **AI-Powered Analysis:** A LangChain agent with Gemini (or OpenAI) interprets queries, uses PandasTool for data operations, and optionally ChartTool for visualizations.
