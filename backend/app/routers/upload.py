@@ -54,13 +54,23 @@ async def list_files():
     # Use a default user ID since authentication is removed
     default_user_id = "default_user"
     ds = await dataset_service.get_user_datasets(default_user_id)
-    # convert objectids
+    # convert objectids and handle datetime serialization
+    serializable_datasets = []
     for d in ds:
-        d["_id"] = str(d["_id"])
-        d["file_id"] = str(d["file_id"])
+        # Create a new dict to avoid modifying the original during iteration
+        serializable_doc = {}
+        for key, value in d.items():
+            if key == "_id" or key == "file_id":
+                serializable_doc[key] = str(value)
+            elif hasattr(value, "isoformat"):  # Check if it's a datetime-like object
+                serializable_doc[key] = value.isoformat()
+            else:
+                serializable_doc[key] = value
+        serializable_datasets.append(serializable_doc)
+    
     return JSONResponse(
         status_code=200,
-        content={"datasets": ds},
+        content={"datasets": serializable_datasets},
         headers={
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods": "GET, OPTIONS",
