@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ChartRenderer from '../components/ChartRenderer';
+import axios from '../api/axiosClient';
 import './AnalyzePage.css';
 
 const AnalyzePage = () => {
@@ -13,27 +14,15 @@ const AnalyzePage = () => {
   useEffect(() => {
     const fetchDatasets = async () => {
       try {
-        const response = await fetch('/files/list', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setDatasets(data.datasets);
-        } else {
-          const errorData = await response.json();
-          setFetchError(errorData.detail || 'Failed to fetch datasets.');
-        }
+        const response = await axios.get('/files/list');
+        setDatasets(response.data.datasets);
       } catch (err) {
         setFetchError('Error fetching datasets: ' + err.message);
       }
     };
 
     fetchDatasets();
-  }, []);
+  }, []); 
 
   const handleAnalyze = async () => {
     if (!selectedDatasetId || !question.trim()) {
@@ -45,23 +34,12 @@ const AnalyzePage = () => {
     setAnalysisResult(null);
 
     try {
-      const response = await fetch(`/analyze?dataset_id=${selectedDatasetId}&question=${encodeURIComponent(question.trim())}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setAnalysisResult(data);
-      } else {
-        const errorData = await response.json();
-        alert(`Analysis failed: ${errorData.detail || 'Unknown error'}`);
-      }
+      const response = await axios.post(`/analyze?dataset_id=${selectedDatasetId}&question=${encodeURIComponent(question.trim())}`);
+      setAnalysisResult(response.data);
     } catch (error) {
       console.error('Error during analysis:', error);
-      alert('Error during analysis.');
+      const errorMessage = error.response?.data?.detail || error.message || 'Unknown error occurred';
+      alert(`Analysis failed: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
