@@ -45,7 +45,7 @@ const AnalyzePage = () => {
     setAnalysisResult(null);
 
     try {
-      const response = await fetch(`/api/analyze/?dataset_id=${selectedDatasetId}&question=${encodeURIComponent(question.trim())}`, {
+      const response = await fetch(`/api/analyze?dataset_id=${selectedDatasetId}&question=${encodeURIComponent(question.trim())}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

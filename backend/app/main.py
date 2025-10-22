@@ -13,8 +13,8 @@ app.include_router(analyze.router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins
-    allow_credentials=False,  # Set to False when using allow_origins=["*"]
+    allow_origins=["https://ai-data-analyst-eta.vercel.app"],  # Allow only the frontend origin
+    allow_credentials=True,  # Allow credentials
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
