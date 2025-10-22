@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+motor             # async MongoDB driver
+python-multipart  # file uploads
+pandas
+matplotlib
+numpy
+python-dotenv
+langchain>=0.0.200
+google-generativeai
+langchain-google-genai
+requests
+aiofiles
+pydantic[email]

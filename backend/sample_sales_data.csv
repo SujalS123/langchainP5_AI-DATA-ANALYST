@@ -1,0 +1,11 @@
+state,profit,sales,region
+California,50000,200000,West
+Texas,45000,180000,South
+New York,60000,250000,Northeast
+Florida,35000,150000,Southeast
+Illinois,40000,170000,Midwest
+Washington,55000,220000,West
+Ohio,30000,140000,Midwest
+Georgia,32000,160000,Southeast
+Michigan,38000,180000,Midwest
+North Carolina,42000,190000,Southeast

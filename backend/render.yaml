@@ -1,0 +1,22 @@
+version: 1
+services:
+  - type: web
+    name: ai-data-analyst-backend
+    env: docker
+    dockerfile_path: ./backend/Dockerfile
+    plan: free
+    env_vars:
+      - key: MONGO_URI
+        value: "mongodb+srv://<user>:<pw>@cluster0.mongodb.net/ai_data_analyst?retryWrites=true&w=majority"
+      - key: JWT_SECRET
+        value: "supersecretkey_here_change_me"
+      - key: JWT_ALGORITHM
+        value: "HS256"
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "1440"
+      - key: LLM_PROVIDER
+        value: "GEMINI"
+      - key: OPENAI_API_KEY
+        value: "xxx"
+      - key: GEMINI_API_KEY
+        value: "xxx"

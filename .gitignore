@@ -1,0 +1,19 @@
+# Backend (FastAPI)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.vscode/
+venv/
+
+# Frontend (React)
+node_modules/
+build/
+.DS_Store
+
+# General
+.idea/
+.vscode/
+*.log
+*.tmp
