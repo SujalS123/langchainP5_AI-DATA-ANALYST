@@ -29,7 +29,17 @@ async def analyze(dataset_id: str = Query(...), question: str = Query(...)):
             result = await analyze_question(df, question)
             return result
         except Exception as agent_error:
+            error_msg = str(agent_error)
             print(f"Agent service failed: {agent_error}")
+            
+            # Check for quota errors
+            if "429" in error_msg or "quota" in error_msg.lower() or "ResourceExhausted" in error_msg:
+                return {
+                    "final_answer": "⚠️ API Quota Exceeded\n\nThe Gemini API has reached its quota limit. This typically resets daily for free tier accounts.\n\nSolutions:\n• Wait for the quota to reset (usually 24 hours)\n• Use a different API key\n• Upgrade your Gemini API plan\n\nDataset Info:\n" + f"• File: {dataset_doc.get('filename', 'unknown')}\n• Columns: {', '.join(df.columns[:10])}{'...' if len(df.columns) > 10 else ''}\n• Rows: {len(df)}",
+                    "error": "quota_exceeded",
+                    "debug": "Gemini API quota exceeded"
+                }
+            
             return {
                 "final_answer": f"Processed question: {question} for dataset: {dataset_doc.get('filename', 'unknown')}. Dataset has {len(df.columns)} columns: {', '.join(df.columns[:5])}...",
                 "chart_image": None,
