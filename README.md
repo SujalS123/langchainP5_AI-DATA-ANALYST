@@ -1,16 +1,15 @@
 # AI Data Analyst
 
-This project implements an AI Data Analyst backend using FastAPI, LangChain, and MongoDB Atlas. It allows users to upload CSV files, authenticate, and then ask natural language queries about their data. The AI agent uses PandasTool for data manipulation and ChartTool for generating visualizations.
+This project implements an AI Data Analyst backend using FastAPI, LangChain, and MongoDB Atlas. It allows users to upload CSV files and ask natural language queries about their data. The AI agent uses PandasTool for data manipulation and ChartTool for generating visualizations.
 
 ## Features
 
-* 
 * **CSV Uploads:** Users can upload CSV files, which are stored in MongoDB Atlas GridFS.
 * **Natural Language Queries:** Users can ask questions about their uploaded datasets using natural language.
-* **AI-Powered Analysis:** A LangChain agent with Gemini (or OpenAI) interprets queries, uses PandasTool for data operations, and optionally ChartTool for visualizations.
-* **Structured Responses:** Returns structured JSON with textual insights, step-by-step reasoning, and base64 encoded chart images.
+* **AI-Powered Analysis:** A LangChain agent with Gemini interprets queries and uses PandasTool for data operations.
+* **Structured Responses:** Returns structured JSON with textual insights and analysis results.
 * **Scalable Backend:** Built with FastAPI for high performance and asynchronous operations.
-* **MongoDB Atlas:** Utilizes MongoDB for user management and GridFS for efficient file storage.
+* **MongoDB Atlas:** Utilizes MongoDB for dataset storage and GridFS for efficient file storage.
 
 ## Project Structure
 
@@ -21,26 +20,16 @@ ai-data-analyst/
 │   │   ├── main.py
 │   │   ├── config.py
 │   │   ├── deps.py
-│   │   ├── auth.py
-│   │   ├── models.py           # pydantic schemas
 │   │   ├── routers/
-│   │   │   ├── auth.py
 │   │   │   ├── upload.py
 │   │   │   ├── analyze.py
 │   │   ├── services/
-│   │   │   ├── mongo_service.py
 │   │   │   ├── dataset_service.py
 │   │   │   ├── agent_service.py
-│   │   │   ├── tools.py         # PandasTool, ChartTool
-│   │   ├── llm/
-│   │   │   ├── llm_client.py    # provider adapter (Gemini/OpenAI)
-│   │   ├── utils/
-│   │   │   ├── base64_utils.py
-│   │   │   ├── logging.py
 │   ├── requirements.txt
 │   ├── Dockerfile
 │   └── start.sh
-├── frontend/ (outline only — React)
+├── frontend/
 ├── README.md
 ```
 
@@ -48,22 +37,17 @@ ai-data-analyst/
 
 ### 1. Environment Variables
 
-Create a `.env` file in the `ai-data-analyst/` directory with the following content:
+Create a `.env` file in the `backend/` directory with the following content:
 
 ```
 MONGO_URI=mongodb+srv://<user>:<pw>@cluster0.mongodb.net/ai_data_analyst?retryWrites=true&w=majority
-JWT_SECRET=supersecretkey_here_change_me
-JWT_ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=1440
-LLM_PROVIDER=GEMINI    # or OPENAI
-OPENAI_API_KEY=xxx
-GEMINI_API_KEY=xxx
+LLM_PROVIDER=GEMINI
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
 * **MONGO_URI**: Your MongoDB Atlas connection string.
-* **JWT_SECRET**: A strong secret key for JWT token generation.
-* **LLM_PROVIDER**: Specify `GEMINI` or `OPENAI`.
-* **OPENAI_API_KEY / GEMINI_API_KEY**: Your respective API keys.
+* **LLM_PROVIDER**: Set to `GEMINI`.
+* **GEMINI_API_KEY**: Your Google Gemini API key.
 
 ### 2. Backend Setup
 
@@ -92,53 +76,44 @@ docker build -t ai-data-analyst-backend .
 docker run -p 8000:8000 ai-data-analyst-backend
 ```
 
-### 3. Frontend (Outline)
+### 3. Frontend
 
-The frontend is outlined as a React application. It should interact with the backend endpoints as follows:
+The frontend is a React application deployed on Vercel. It interacts with the backend endpoints:
 
-* **POST `/api/auth/signup`**: Body: `{email, password, display_name}`
-* **POST `/api/auth/login`**: Body: `{email, password}` → Returns `{access_token}`
-* **POST `/api/files/upload`**: Header: `Authorization: Bearer <token>`, Body: form-data file
-* **GET `/api/files/list`**: Header: `Authorization: Bearer <token>`
-* **POST `/api/analyze`**: Header: `Authorization: Bearer <token>`, Body JSON: `{dataset_id: "<id>", question: "Which region..."}` → Returns JSON with `"final_answer"`, `"reasoning"`, `"tool_results"`, `"chart_image"`
+* **POST `/files/upload`**: Upload CSV file (multipart/form-data)
+* **GET `/files/list`**: Get list of uploaded datasets
+* **POST `/analyze`**: Query parameters: `dataset_id` and `question` → Returns JSON with `"final_answer"` and analysis results
 
-The frontend should:
-* Upload CSV and store `dataset_id`.
-* Provide a question input UI.
-* Render `final_answer` and `reasoning` as text.
-* If `chart_image` is present, display it as `<img src={chart_image} />`.
+The frontend:
+* Uploads CSV files and displays the list of datasets
+* Provides a question input interface
+* Displays analysis results and insights
 
-## Security Considerations
+## Deployment
 
-* Ensure `JWT_SECRET` is strong and kept secure.
-* Use HTTPS in production environments.
-* Implement rate limiting on the `/api/analyze` endpoint to prevent abuse and control LLM costs.
-* Validate and limit uploaded file sizes (e.g., 10-50 MB).
-* Authorization checks for datasets are based on `datasets.owner_id`.
+* **Backend**: Deployed on Render using Docker
+* **Frontend**: Deployed on Vercel
+* **Database**: MongoDB Atlas
+* Uses environment variables for configuration
+* CORS enabled for cross-origin requests
 
-## Deployment Notes
+## API Endpoints
 
-* Dockerize the backend for easy deployment.
-* Use MongoDB Atlas for a production-ready database.
-* Securely manage LLM API keys (e.g., Google Cloud Secret Manager).
-* Optimize LLM calls by chunking prompts and performing heavy data processing locally with Pandas.
+* `GET /` - Health check
+* `GET /health` - Health status
+* `POST /files/upload` - Upload CSV file
+* `GET /files/list` - List all uploaded datasets
+* `POST /analyze?dataset_id=<id>&question=<query>` - Analyze dataset with natural language query
+* `GET /analyze?dataset_id=<id>&question=<query>` - Alternative GET method for analysis
 
-## Testing Strategy
+## Example Usage
 
-1. Verify file upload and listing functionality, ensuring data is correctly stored in GridFS.
-2. Test `dataset_service.load_dataset_to_df` with various CSVs.
-3. Manually test PandasTool actions and chart generation to confirm correct output and base64 encoding.
-4. Integrate the LLM and iterate on prompt design to ensure reliable JSON plan generation.
-
-## Example Run-through
-
-1. User signs up and logs in, receiving a JWT.
-2. User uploads `sales.csv`. The backend stores the file in GridFS and returns a `dataset_id`.
-3. User asks: "Which region is declining the fastest and why?"
+1. Upload a CSV file using the frontend interface
+2. Select the uploaded dataset from the list
+3. Ask a question like "What are the top 10 customers by sales?"
 4. The backend:
-   * Loads the dataset into a Pandas DataFrame.
-   * Constructs a prompt with column information.
-   * The LLM generates a JSON plan (e.g., `group_by`, `correlation`, `plot`).
-   * The orchestrator executes the plan using `PandasTool` and `ChartTool`.
-   * Returns `final_answer`, `reasoning`, `tool_results`, and `chart_image` (base64).
-5. The frontend displays the insights and the generated chart.
+   * Loads the dataset into a Pandas DataFrame
+   * Uses Gemini LLM to interpret the query
+   * Executes data analysis using PandasTool
+   * Returns structured insights
+5. The frontend displays the analysis results
