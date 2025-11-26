@@ -2,8 +2,8 @@ fastapi
 uvicorn[standard]
 pydantic
 pydantic-settings
-motor             # async MongoDB driver
-python-multipart  # file uploads
+motor
+python-multipart
 pandas
 matplotlib
 numpy
@@ -15,3 +15,4 @@ langchain-google-genai
 requests
 aiofiles
 pydantic[email]
+importlib-metadata>=6.0.0

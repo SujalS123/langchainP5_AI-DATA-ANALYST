@@ -8,6 +8,12 @@ from ..deps import get_mongo_client
 router = APIRouter(prefix="/analyze", tags=["analyze"])
 api_router = APIRouter(prefix="/api/analyze", tags=["analyze"])
 
+# Add route without trailing slash to prevent 307 redirects
+@router.post("")
+@router.get("")
+async def analyze_no_slash(dataset_id: str = Query(...), question: str = Query(...)):
+    return await analyze(dataset_id, question)
+
 @router.get("/test")
 async def test():
     return {"message": "Analyze router is working"}
