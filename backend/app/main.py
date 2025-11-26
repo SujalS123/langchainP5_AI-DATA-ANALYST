@@ -19,6 +19,9 @@ app.include_router(upload.router)
 app.include_router(analyze.router)
 app.include_router(analyze.api_router)
 
+print("✓ Routers loaded successfully")
+print(f"✓ Routes: {[route.path for route in app.routes]}")
+
 @app.get("/")
 async def root():
     return {"status": "ok", "message": "AI Data Analyst API"}
