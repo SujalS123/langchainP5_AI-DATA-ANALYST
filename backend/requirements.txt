@@ -9,6 +9,7 @@ matplotlib
 numpy
 python-dotenv
 langchain>=0.0.200
+langchain-core
 google-generativeai
 langchain-google-genai
 requests

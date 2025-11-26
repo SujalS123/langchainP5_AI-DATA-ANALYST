@@ -4,47 +4,16 @@ from ..services.dataset_service import load_dataset_to_df, get_user_datasets
 from bson import ObjectId
 from ..deps import get_mongo_client
 
+# Create routers for both /analyze and /api/analyze
 router = APIRouter(prefix="/analyze", tags=["analyze"])
-
-@router.options("/test")
-async def options_test():
-    return JSONResponse(
-        status_code=200,
-        content={"message": "OK"},
-        headers={
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET, OPTIONS",
-            "Access-Control-Allow-Headers": "*",
-            "Access-Control-Max-Age": "600"
-        }
-    )
+api_router = APIRouter(prefix="/api/analyze", tags=["analyze"])
 
 @router.get("/test")
 async def test():
-    return JSONResponse(
-        status_code=200,
-        content={"message": "Analyze router is working"},
-        headers={
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET, OPTIONS",
-            "Access-Control-Allow-Headers": "*"
-        }
-    )
-
-@router.options("/")
-async def options_analyze():
-    return JSONResponse(
-        status_code=200,
-        content={"message": "OK"},
-        headers={
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "POST, OPTIONS",
-            "Access-Control-Allow-Headers": "*",
-            "Access-Control-Max-Age": "600"
-        }
-    )
+    return {"message": "Analyze router is working"}
 
 @router.post("/")
+@router.get("/")
 async def analyze(dataset_id: str = Query(...), question: str = Query(...)):
     print(f"Analyze endpoint called with dataset_id: {dataset_id}, question: {question}")
     try:
@@ -53,50 +22,31 @@ async def analyze(dataset_id: str = Query(...), question: str = Query(...)):
         if not dataset_doc:
             raise HTTPException(status_code=404, detail="Dataset not found")
         
-        # Load the dataset
         df = await load_dataset_to_df(dataset_doc)
         
-        # Try to use the agent service
         try:
             from ..services.agent_service import analyze_question
             result = await analyze_question(df, question)
-            return JSONResponse(
-                status_code=200,
-                content=result,
-                headers={
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Methods": "POST, OPTIONS",
-                    "Access-Control-Allow-Headers": "*"
-                }
-            )
+            return result
         except Exception as agent_error:
             print(f"Agent service failed: {agent_error}")
-            # Fallback to simple response if agent fails
-            fallback_result = {
+            return {
                 "final_answer": f"Processed question: {question} for dataset: {dataset_doc.get('filename', 'unknown')}. Dataset has {len(df.columns)} columns: {', '.join(df.columns[:5])}...",
                 "chart_image": None,
                 "debug": f"Agent service failed: {str(agent_error)}. Showing basic dataset info instead."
             }
-            return JSONResponse(
-                status_code=200,
-                content=fallback_result,
-                headers={
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Methods": "POST, OPTIONS",
-                    "Access-Control-Allow-Headers": "*"
-                }
-            )
         
     except Exception as e:
         import traceback
         traceback.print_exc()
-        error_response = {"error": f"Analysis failed: {str(e)}"}
-        return JSONResponse(
-            status_code=500,
-            content=error_response,
-            headers={
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST, OPTIONS",
-                "Access-Control-Allow-Headers": "*"
-            }
-        )
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+
+@api_router.get("/test")
+async def api_test():
+    return {"message": "API Analyze router is working"}
+
+@api_router.post("/")
+@api_router.get("/")
+async def api_analyze(dataset_id: str = Query(...), question: str = Query(...)):
+    print(f"API Analyze endpoint called with dataset_id: {dataset_id}, question: {question}")
+    return await analyze(dataset_id, question)
