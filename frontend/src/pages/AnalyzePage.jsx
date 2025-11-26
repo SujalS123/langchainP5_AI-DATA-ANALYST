@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../api/axiosClient';
 import './AnalyzePage.css';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://ai-data-analyst-x547.onrender.com';
 
 const AnalyzePage = () => {
   const [datasets, setDatasets] = useState([]);
@@ -18,7 +16,7 @@ const AnalyzePage = () => {
 
   const fetchDatasets = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/files/list`);
+      const response = await axios.get('/files/list');
       setDatasets(response.data.datasets || []);
     } catch (err) {
       console.error('Error fetching datasets:', err);
@@ -38,7 +36,7 @@ const AnalyzePage = () => {
 
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/analyze?dataset_id=${selectedDataset}&question=${encodeURIComponent(question)}`
+        `/analyze?dataset_id=${selectedDataset}&question=${encodeURIComponent(question)}`
       );
       setAnalysisResult(response.data);
     } catch (err) {
