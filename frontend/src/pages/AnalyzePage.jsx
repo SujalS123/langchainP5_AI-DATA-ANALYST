@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../api/axiosClient';
+import { Bar, Line, Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Title, Tooltip, Legend } from 'chart.js';
 import './AnalyzePage.css';
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Title, Tooltip, Legend);
 
 const AnalyzePage = () => {
   const [datasets, setDatasets] = useState([]);
@@ -90,8 +94,23 @@ const AnalyzePage = () => {
         <div className="results-section">
           <h2>Analysis Results</h2>
           <div className="result-content">
-            <p>{analysisResult.final_answer}</p>
+            <p style={{ whiteSpace: 'pre-wrap' }}>{analysisResult.final_answer}</p>
           </div>
+
+          {analysisResult.chart_specification && (
+            <div className="chart-container" style={{ marginTop: '30px', maxWidth: '800px', margin: '30px auto' }}>
+              <h3>Visualization</h3>
+              {analysisResult.chart_specification.type === 'bar' && (
+                <Bar data={analysisResult.chart_specification.data} options={analysisResult.chart_specification.options} />
+              )}
+              {analysisResult.chart_specification.type === 'line' && (
+                <Line data={analysisResult.chart_specification.data} options={analysisResult.chart_specification.options} />
+              )}
+              {analysisResult.chart_specification.type === 'pie' && (
+                <Pie data={analysisResult.chart_specification.data} options={analysisResult.chart_specification.options} />
+              )}
+            </div>
+          )}
 
           <div className="debug-info" style={{ marginTop: '20px' }}>
             <details>
