@@ -5,75 +5,28 @@ from bson import ObjectId
 
 router = APIRouter(prefix="/files", tags=["files"])
 
-@router.options("/upload")
-async def options_upload():
-    return JSONResponse(
-        status_code=200,
-        content={"message": "OK"},
-        headers={
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "POST, OPTIONS",
-            "Access-Control-Allow-Headers": "*",
-            "Access-Control-Max-Age": "600"
-        }
-    )
-
 @router.post("/upload")
 async def upload_csv(file: UploadFile = File(...)):
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Only CSV allowed")
     content = await file.read()
-    # Use a default user ID since authentication is removed
     default_user_id = "default_user"
     doc = await dataset_service.save_dataset(default_user_id, content, file.filename)
-    return JSONResponse(
-        status_code=200,
-        content={"status":"ok", "dataset_id": str(doc["_id"]), "filename": file.filename},
-        headers={
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "POST, OPTIONS",
-            "Access-Control-Allow-Headers": "*"
-        }
-    )
-
-@router.options("/list")
-async def options_list():
-    return JSONResponse(
-        status_code=200,
-        content={"message": "OK"},
-        headers={
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET, OPTIONS",
-            "Access-Control-Allow-Headers": "*",
-            "Access-Control-Max-Age": "600"
-        }
-    )
+    return {"status":"ok", "dataset_id": str(doc["_id"]), "filename": file.filename}
 
 @router.get("/list")
 async def list_files():
-    # Use a default user ID since authentication is removed
     default_user_id = "default_user"
     ds = await dataset_service.get_user_datasets(default_user_id)
-    # convert objectids and handle datetime serialization
     serializable_datasets = []
     for d in ds:
-        # Create a new dict to avoid modifying the original during iteration
         serializable_doc = {}
         for key, value in d.items():
             if key == "_id" or key == "file_id":
                 serializable_doc[key] = str(value)
-            elif hasattr(value, "isoformat"):  # Check if it's a datetime-like object
+            elif hasattr(value, "isoformat"):
                 serializable_doc[key] = value.isoformat()
             else:
                 serializable_doc[key] = value
         serializable_datasets.append(serializable_doc)
-    
-    return JSONResponse(
-        status_code=200,
-        content={"datasets": serializable_datasets},
-        headers={
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET, OPTIONS",
-            "Access-Control-Allow-Headers": "*"
-        }
-    )
+    return {"datasets": serializable_datasets}

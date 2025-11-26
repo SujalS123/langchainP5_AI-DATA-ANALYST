@@ -6,7 +6,7 @@ from .routers import upload, analyze
 from .config import settings
 import uvicorn
 
-app = FastAPI(title="AI Data Analyst")
+app = FastAPI(title="AI Data Analyst", redirect_slashes=False)
 
 # Configure CORS BEFORE adding routers
 app.add_middleware(
