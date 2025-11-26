@@ -1,4 +1,4 @@
-FROM python:3.9-slim-buster
+FROM python:3.9-slim
 
 WORKDIR /app
 
@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["/bin/bash", "./start.sh"]
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
