@@ -1,6 +1,6 @@
 fastapi
 uvicorn[standard]
-pydantic
+pydantic>=2.0.0
 pydantic-settings
 motor
 python-multipart
@@ -8,11 +8,10 @@ pandas
 matplotlib
 numpy
 python-dotenv
-langchain>=0.0.200
-langchain-core
+langchain>=0.1.0
+langchain-core>=0.1.0
+langchain-community
 google-generativeai
 langchain-google-genai
 requests
 aiofiles
-pydantic[email]
-importlib-metadata>=6.0.0
