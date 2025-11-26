@@ -35,7 +35,7 @@ const AnalyzePage = () => {
     setAnalysisResult(null);
 
     try {
-      const response = await axios.post(
+      const response = await axios.get(
         `/analyze?dataset_id=${selectedDataset}&question=${encodeURIComponent(question)}`
       );
       setAnalysisResult(response.data);

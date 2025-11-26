@@ -4,7 +4,7 @@ from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from .routers import upload, analyze
 import uvicorn
 
-app = FastAPI(title="AI Data Analyst", redirect_slashes=False)
+app = FastAPI(title="AI Data Analyst")
 
 app.add_middleware(
     CORSMiddleware,
