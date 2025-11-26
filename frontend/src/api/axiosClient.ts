@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosClient = axios.create({
-  baseURL: 'https://langchainp5-ai-data-analyst.onrender.com',
+  baseURL: 'https://ai-data-analyst-x547.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   },

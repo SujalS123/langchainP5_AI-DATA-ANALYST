@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AnalyzePage.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://langchainp5-ai-data-analyst.onrender.com';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://ai-data-analyst-x547.onrender.com';
 
 const AnalyzePage = () => {
   const [datasets, setDatasets] = useState([]);
